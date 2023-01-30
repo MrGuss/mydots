@@ -4,10 +4,16 @@
 # Should you change your keyboard layout some time, delete
 # this file and re-run i3-config-wizard(1).
 #
+#Colorscheme
+# class                 border  bground text    indicator child_border
+client.focused          #16511E #16511E #FFFFFF #6DFF55   #16511E
+client.focused_inactive #333333 #5F676A #FFFFFF #484E50   #5F676A
+client.unfocused        #333333 #222222 #888888 #292D2E   #222222
+client.urgent           #2F343A #774900 #FFFFFF #774900   #774900
+client.placeholder      #000000 #0C0C0C #FFFFFF #000000   #0C0C0C
 
-# i3 config file (v4)
-#
-# Please see https://i3wm.org/docs/userguide.html for a complete reference!
+client.background       #FFFFFF
+
 
 set $mod Mod4
 
@@ -30,13 +36,15 @@ font hack:monospace 12
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec terminator
+bindsym $mod+Return exec alacritty
 #bindsym $mod+Return exec st
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run -b -fn "Hack:regular:pixelsize=15"
+#bindsym $mod+d exec dmenu_run -b -fn "Hack:regular:pixelsize=15"
+#bindsym $mod+d exec "dmenu_run -b -nf '#BBBBBB' -nb '#222222' -sb '#16511E' -sf '#EEEEEE' -fn 'Hack:regular:pixelsize=15'"
+bindsym $mod+d exec "rofi -combi-modi window,drun,ssh -font 'hack 15' -show combi"
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
@@ -103,8 +111,8 @@ set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
-set $ws10 "10"
-
+set $ws10 "m"
+#set $ws11 "m"
 # switch to workspace
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
@@ -115,8 +123,8 @@ bindsym $mod+6 workspace $ws6
 bindsym $mod+7 workspace $ws7
 bindsym $mod+8 workspace $ws8
 bindsym $mod+9 workspace $ws9
-#bindsym $mod+0 workspace $ws10
-
+bindsym $mod+m workspace $ws10
+#bindsym $mod+m workspace $ws11
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace $ws1
 bindsym $mod+Shift+2 move container to workspace $ws2
@@ -127,7 +135,7 @@ bindsym $mod+Shift+6 move container to workspace $ws6
 bindsym $mod+Shift+7 move container to workspace $ws7
 bindsym $mod+Shift+8 move container to workspace $ws8
 bindsym $mod+Shift+9 move container to workspace $ws9
-bindsym $mod+Shift+0 move container to workspace $ws10
+bindsym $mod+Shift+m move container to workspace $ws10
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -171,7 +179,6 @@ bindsym $mod+r mode "resize"
 #}
 
 #wanna try this
-#exec nitrogen --restore
 
 # Configs of look
 new_window pixel 3
@@ -179,10 +186,10 @@ set $HOME /home/mrguss/
 ### i3-gaps stuff ###
 
 # Necessary for i3-gaps to work properly (pixel can be any value)
-for_window [class="^.*"] border pixel 3
+for_window [class="^.*"] border pixel 0
 
 # Smart Gaps
-smart_gaps on
+smart_gaps off 
 
 # Smart Borders
 smart_borders on
@@ -313,20 +320,21 @@ mode "$mode_gaps_left" {
         bindsym Escape mode "default"
 }
 
-exec --no-startup-id wal -R
 exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always --no-startup-id "sh /home/mrguss/.config/polybar/launch.sh"
+exec --no-startup-id wal -R -n
 exec --no-startup-id nm-applet
-exec --no-startup-id xfce4-power-manager
-exec --no-startup-id pamac-tray
+#exec --no-startup-id xfce4-power-manager
+#exec --no-startup-id pamac-tray
 exec_always --no-startup-id fix_xcursor
-exec --no-startup-id $HOME/.config/polybar/launch.sh
-exec_always --no-startup-id "killall -q picom; picom --experimental-backends --backend glx --config $HOME/.config/picom/picom.conf"
 
+exec_always --no-startup-id "killall -q picom; picom --log-file ~/.config/picom/pilog.log --experimental-backends --backend glx --config $HOME/.config/picom/picom.conf"
+exec --no-startup-id nitrogen --restore
 # Set shut down, restart and locking features
-bindsym $mod+0 mode "$mode_system"
+bindsym $mod+q mode "$mode_system"
 set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (h)ibernate, (r)eboot, (Shift+s)hutdown
 mode "$mode_system" {
-    bindsym l exec --no-startup-id i3exit lock, mode "default"
+    bindsym l exec --no-startup-id slock, mode "default"
     bindsym s exec --no-startup-id i3exit suspend, mode "default"
     bindsym u exec --no-startup-id i3exit switch_user, mode "default"
     bindsym e exec --no-startup-id i3exit logout, mode "default"
@@ -339,24 +347,25 @@ mode "$mode_system" {
     bindsym Escape mode "default"
 }
 
-#Hernya dlya audioplayera qmmp
-mode "mode_qmmp_ctrl" {
-	bindsym plus exec qmmp --volume-inc
-	bindsym minus exec qmmp --volume-dec
-	bindsym p exec qmmp -t
-	bindsym e exec qmmp --next
-	bindsym q exec qmmp --previous
+# Hernya dlya audioplayera qmmp
+#mode "mode_qmmp_ctrl" {
+#	bindsym plus exec qmmp --volume-inc
+#	bindsym minus exec qmmp --volume-dec
+#	bindsym p exec qmmp -t
+#	bindsym e exec qmmp --next
+#	bindsym q exec qmmp --previous
 
-	bindsym Return mode "default"
-        bindsym Escape mode "default"
-        bindsym $mod+m mode "default"
-}
+#	bindsym Return mode "default"
+#        bindsym Escape mode "default"
+#        bindsym $mod+m mode "default"
+#}
 
-bindsym $mod+m mode "mode_qmmp_ctrl"
+# bindsym $mod+m mode "mode_qmmp_ctrl"
 
+# Screenshot utilyty
 
-#Hernya dlya upravleniya zvukom pulseauidio (predelat!!!!!!!!!!!!!!!)
+bindsym ctrl+Print exec i3-scrot 
 
-bindsym $mod+F9 exec pactl set-sink-volume alsa_output.pci-0000_01_00.1.hdmi-stereo-extra3 0%
-bindsym $mod+F11 exec pactl set-sink-volume alsa_output.pci-0000_01_00.1.hdmi-stereo-extra3 +10%
-bindsym $mod+F10 exec pactl set-sink-volume alsa_output.pci-0000_01_00.1.hdmi-stereo-extra3 -10%
+exec --no-startup-id "xset -dpms"
+exec --no-startup-id "xset s of"
+exec --no-startup-id "xscreensaver --no-splash"
